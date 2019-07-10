@@ -41,4 +41,8 @@ const getTotalPrices = (sumItemsCost) => {
     return sumItemsCost.reduce((pre,cur)=>pre.price + cur.price);
 }
 
-module.exports = {isEachBarValid,isCartItemsValid,getItemListInfo,getItemLists,getSumItemsCost,getTotalPrices};
+const getTotalPromotion = (sumItemsCost) => {
+    return sumItemsCost.reduce((pre,cur)=>pre.promotion + cur.promotion);
+}
+
+module.exports = {isEachBarValid,isCartItemsValid,getItemListInfo,getItemLists,getSumItemsCost,getTotalPrices,getTotalPromotion};
