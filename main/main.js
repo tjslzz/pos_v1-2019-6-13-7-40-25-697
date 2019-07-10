@@ -12,7 +12,17 @@ const isCartItemsValid = (barcodes,database) => {
 }
 
 const getItemListInfo = (barcode,database) => {
-    return database.filter((item)=>barcode.split('-')[0].match(item.barcode));
+    let item = database.filter((item)=>barcode.split('-')[0].match(item.barcode));
+    return item;
 }
 
-module.exports = {isEachBarValid,isCartItemsValid,getItemListInfo};
+const getItemLists = (barcodes) => {
+    let ItemLists = new Object();
+    barcodes.map((barcode)=>{
+        let temp = barcode.split('-');
+        temp.length == 2?ItemLists[temp[0]]==undefined?ItemLists[temp[0]]=temp[1]*1.00:ItemLists[temp[0]]+=temp[1]*1.00:ItemLists[temp[0]]==undefined?ItemLists[temp[0]]=1.00:ItemLists[temp[0]]+=1.00;
+    });
+    return ItemLists;
+}
+
+module.exports = {isEachBarValid,isCartItemsValid,getItemListInfo,getItemLists};
