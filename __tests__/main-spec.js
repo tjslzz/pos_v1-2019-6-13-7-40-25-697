@@ -83,7 +83,7 @@ it ('should print ItemList when call getItemLists given barcodes', () => {
 
 it ('should print ItemSumCost when call getSumItemsCost given Lists', () => {
   let barcodes = ['ITEM000000','ITEM000003-2.5'];
-  expect(Pos_Machine.getSumItemsCost(Pos_Machine.getItemLists(barcodes),database,promotion)).toStrictEqual([ { barcode: 'ITEM000000', price: 3, promotion: 0 },{ barcode: 'ITEM000003', price: 37.5, promotion: 0 } ]);
+  expect(Pos_Machine.getSumItemsCost(Pos_Machine.getItemLists(barcodes),database,promotion)).toStrictEqual([ { barcode: 'ITEM000000', count: 1, price: 3, promotion: 0 },{ barcode: 'ITEM000003', count: 2.5, price: 37.5, promotion: 0 } ]);
 });
 
 it ('should print 40.5 when call getTotalPrices given Lists', () => {
@@ -91,7 +91,15 @@ it ('should print 40.5 when call getTotalPrices given Lists', () => {
   expect(Pos_Machine.getTotalPrices(Pos_Machine.getSumItemsCost(Pos_Machine.getItemLists(barcodes),database,promotion))).toBe(40.5);
 });
 
-it ('should print 0 when call getTotalPrices given Lists', () => {
+it ('should print 0 when call getTotalPromotion given Lists', () => {
   let barcodes = ['ITEM000000','ITEM000003-2.5'];
   expect(Pos_Machine.getTotalPromotion(Pos_Machine.getSumItemsCost(Pos_Machine.getItemLists(barcodes),database,promotion))).toBe(0);
+});
+
+it ('should print receipt when call createReciept given Lists', () => {
+  let barcodes = ['ITEM000000','ITEM000003-2.5'];
+  let sumItemsCost = Pos_Machine.getSumItemsCost(Pos_Machine.getItemLists(barcodes),database,promotion);
+  let totalPrices = Pos_Machine.getTotalPrices(Pos_Machine.getSumItemsCost(Pos_Machine.getItemLists(barcodes),database,promotion));
+  let totalPromotion = Pos_Machine.getTotalPromotion(Pos_Machine.getSumItemsCost(Pos_Machine.getItemLists(barcodes),database,promotion));
+  expect(Pos_Machine.createReciept(sumItemsCost,totalPrices,totalPromotion,database)).toBe(`***<没钱赚商店>收据***\n名称：可口可乐，数量：1瓶，单价：3.00(元)，小计：3.00(元)\n名称：荔枝，数量：2.5斤，单价：15.00(元)，小计：37.5.00(元)\n----------------------\n总计：40.5(元)\n节省：0(元)\n**********************`);
 });
