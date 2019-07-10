@@ -47,6 +47,16 @@ const database = [
       ]
     }
   ];
+  const tags = [
+    'ITEM000001',
+    'ITEM000001',
+    'ITEM000001',
+    'ITEM000001',
+    'ITEM000001',
+    'ITEM000003-2.5',
+    'ITEM000005',
+    'ITEM000005-2',
+  ];
 
 
 it ('should print true when call isEachBarValid given ITEM000000', () => {
@@ -97,9 +107,8 @@ it ('should print 0 when call getTotalPromotion given Lists', () => {
 });
 
 it ('should print receipt when call createReciept given Lists', () => {
-  let barcodes = ['ITEM000000','ITEM000003-2.5'];
-  let sumItemsCost = Pos_Machine.getSumItemsCost(Pos_Machine.getItemLists(barcodes),database,promotion);
-  let totalPrices = Pos_Machine.getTotalPrices(Pos_Machine.getSumItemsCost(Pos_Machine.getItemLists(barcodes),database,promotion));
-  let totalPromotion = Pos_Machine.getTotalPromotion(Pos_Machine.getSumItemsCost(Pos_Machine.getItemLists(barcodes),database,promotion));
-  expect(Pos_Machine.createReciept(sumItemsCost,totalPrices,totalPromotion,database)).toBe(`***<没钱赚商店>收据***\n名称：可口可乐，数量：1瓶，单价：3.00(元)，小计：3.00(元)\n名称：荔枝，数量：2.5斤，单价：15.00(元)，小计：37.5.00(元)\n----------------------\n总计：40.5(元)\n节省：0(元)\n**********************`);
+  let sumItemsCost = Pos_Machine.getSumItemsCost(Pos_Machine.getItemLists(tags),database,promotion);
+  let totalPrices = Pos_Machine.getTotalPrices(Pos_Machine.getSumItemsCost(Pos_Machine.getItemLists(tags),database,promotion));
+  let totalPromotion = Pos_Machine.getTotalPromotion(Pos_Machine.getSumItemsCost(Pos_Machine.getItemLists(tags),database,promotion));
+  expect(Pos_Machine.createReciept(sumItemsCost,totalPrices,totalPromotion,database)).toBe(`***<没钱赚商店>收据***\n名称：雪碧，数量：5瓶，单价：3(元)，小计：12(元)\n名称：荔枝，数量：2.5斤，单价：15(元)，小计：37.5(元)\n名称：方便面，数量：3袋，单价：4.5(元)，小计：9(元)\n----------------------\n总计：58.5(元)\n节省：7.5(元)\n**********************`);
 });
