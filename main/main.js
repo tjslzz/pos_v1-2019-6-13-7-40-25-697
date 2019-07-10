@@ -18,12 +18,15 @@ const getItemListInfo = (barcode,database) => {
 
 const getItemLists = (barcodes) => {
     let ItemLists = new Object();
-    barcodes.map((barcode)=>{barcode.split('-').length == 2?ItemLists[barcode.split('-')[0]]==undefined?ItemLists[barcode.split('-')[0]]=barcode.split('-')[1]*1.00:ItemLists[barcode.split('-')[0]]+=barcode.split('-')[1]*1.00:ItemLists[barcode.split('-')[0]]==undefined?ItemLists[barcode.split('-')[0]]=1.00:ItemLists[barcode.split('-')[0]]+=1.00;});
+    barcodes.map((barcode)=>{
+        barcode.split('-').length == 2?(
+            ItemLists[barcode.split('-')[0]]==undefined?ItemLists[barcode.split('-')[0]]=barcode.split('-')[1]*1.00:ItemLists[barcode.split('-')[0]]+=barcode.split('-')[1]*1.00
+            ):ItemLists[barcode.split('-')[0]]==undefined?ItemLists[barcode.split('-')[0]]=1.00:ItemLists[barcode.split('-')[0]]+=1.00;});
     return ItemLists;
 }
 
 const getSumItemsCost = (ItemLists,database,promotion) => {
-    var sumItemsCost = new Array();
+    let sumItemsCost = new Array();
     for(let item in ItemLists){
         let temp = getItemListInfo(item,database)[0];
         if(promotion[0].barcodes.includes(item)){
@@ -31,28 +34,46 @@ const getSumItemsCost = (ItemLists,database,promotion) => {
             sumItemsCost.push({barcode:item,price:temp.price*(ItemLists[item] - promot),promotion:temp.price*promot,count:ItemLists[item]});
         }
         else{
-            sumItemsCost.push({barcode:item,price:temp.price*ItemLists[item],promotion:0,count:ItemLists[item]});
+            sumItemsCost.push({barcode:item,price:temp.price*ItemLists[item],promotion:0.00,count:ItemLists[item]});
         }
     }
     return sumItemsCost;
 }
 
 const getTotalPrices = (sumItemsCost) => {
-    return sumItemsCost.reduce((pre,cur)=>pre.price + cur.price);
+    return sumItemsCost.reduce((pre,cur)=>{pre.price += cur.price;return pre;}).price;
 }
 
 const getTotalPromotion = (sumItemsCost) => {
-    return sumItemsCost.reduce((pre,cur)=>pre.promotion + cur.promotion);
+    return sumItemsCost.reduce((pre,cur)=>{pre.promotion += cur.promotion;return pre;}).promotion;
 }
 
 const createReciept = (sumItemsCost,totalPrices,totalPromotion,database) => {
     let msg = "***<没钱赚商店>收据***\n";
     sumItemsCost.forEach((item)=>{
         let temp = getItemListInfo(item.barcode,database)[0];
-        msg += `名称：${temp.name}，数量：${item.count}${temp.unit}，单价：${temp.price}.00(元)，小计：${item.price}.00(元)\n`
+        msg += `名称：${temp.name}，数量：${item.count}${temp.unit}，单价：${temp.price}(元)，小计：${item.price}(元)\n`
     });
     msg += `----------------------\n总计：${totalPrices}(元)\n节省：${totalPromotion}(元)\n**********************`;
     return msg;
 }
 
-module.exports = {isEachBarValid,isCartItemsValid,getItemListInfo,getItemLists,getSumItemsCost,getTotalPrices,getTotalPromotion,createReciept};
+const printReceipt = (barcodes) => {
+    let database = loadAllItems();
+    let promotion = loadPromotions();
+    let resultValid = [];
+    let itemList = [];
+    let sumItemsCost = new Array();
+    let totalPrices = 0.00;
+    let totalPromotion = 0.00;
+    let msg = "";
+    resultValid = isCartItemsValid(barcodes,database);
+    itemList = getItemLists(barcodes);
+    sumItemsCost = getSumItemsCost(itemList,database,promotion);
+    totalPrices = getTotalPrices(JSON.parse(JSON.stringify(sumItemsCost)));
+    totalPromotion = getTotalPromotion(JSON.parse(JSON.stringify(sumItemsCost)));
+    msg = createReciept(sumItemsCost,totalPrices,totalPromotion,database);
+    console.log(msg);
+}
+
+module.exports = {isEachBarValid,isCartItemsValid,getItemListInfo,getItemLists,getSumItemsCost,getTotalPrices,getTotalPromotion,createReciept,printReceipt};
