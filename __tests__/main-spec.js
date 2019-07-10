@@ -37,6 +37,16 @@ const database = [
       price: 4.50
     }
   ];
+  const promotion = [
+    {
+      type: 'BUY_TWO_GET_ONE_FREE',
+      barcodes: [
+        'ITEM000000',
+        'ITEM000001',
+        'ITEM000005'
+      ]
+    }
+  ];
 
 
 it ('should print true when call isEachBarValid given ITEM000000', () => {
@@ -69,4 +79,9 @@ it ('should print ItemInfo when call getItemListInfo given barcode', () => {
 it ('should print ItemList when call getItemLists given barcodes', () => {
     let barcodes = ['ITEM000000','000000','ITEM999999','ITEM000003-2.5'];
     expect(Pos_Machine.getItemLists(barcodes)).toStrictEqual({ ITEM000000: 1, '000000': 1, ITEM999999: 1, ITEM000003: 2.5 });
+});
+
+it ('should print ItemSumCost when call getSumItemsCost given Lists', () => {
+  let barcodes = ['ITEM000000','ITEM000003-2.5'];
+  expect(Pos_Machine.getSumItemsCost(Pos_Machine.getItemLists(barcodes),database,promotion)).toStrictEqual([ { barcode: 'ITEM000000', price: 3, promotion: 0 },{ barcode: 'ITEM000003', price: 37.5, promotion: 0 } ]);
 });
