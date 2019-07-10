@@ -18,11 +18,23 @@ const getItemListInfo = (barcode,database) => {
 
 const getItemLists = (barcodes) => {
     let ItemLists = new Object();
-    barcodes.map((barcode)=>{
-        let temp = barcode.split('-');
-        temp.length == 2?ItemLists[temp[0]]==undefined?ItemLists[temp[0]]=temp[1]*1.00:ItemLists[temp[0]]+=temp[1]*1.00:ItemLists[temp[0]]==undefined?ItemLists[temp[0]]=1.00:ItemLists[temp[0]]+=1.00;
-    });
+    barcodes.map((barcode)=>{barcode.split('-').length == 2?ItemLists[barcode.split('-')[0]]==undefined?ItemLists[barcode.split('-')[0]]=barcode.split('-')[1]*1.00:ItemLists[barcode.split('-')[0]]+=barcode.split('-')[1]*1.00:ItemLists[barcode.split('-')[0]]==undefined?ItemLists[barcode.split('-')[0]]=1.00:ItemLists[barcode.split('-')[0]]+=1.00;});
     return ItemLists;
 }
 
-module.exports = {isEachBarValid,isCartItemsValid,getItemListInfo,getItemLists};
+const getSumItemsCost = (ItemLists,database,promotion) => {
+    var sumItemsCost = new Array();
+    for(let item in ItemLists){
+        let temp = getItemListInfo(item,database)[0];
+        if(promotion[0].barcodes.includes(item)){
+            let promot = parseInt(ItemLists[item] / 3);
+            sumItemsCost.push({barcode:item,price:temp.price*(ItemLists[item] - promot),promotion:temp.price*promot});
+        }
+        else{
+            sumItemsCost.push({barcode:item,price:temp.price*ItemLists[item],promotion:0});
+        }
+    }
+    return sumItemsCost;
+}
+
+module.exports = {isEachBarValid,isCartItemsValid,getItemListInfo,getItemLists,getSumItemsCost};
