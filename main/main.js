@@ -11,4 +11,8 @@ const isCartItemsValid = (barcodes,database) => {
     return resultValid;
 }
 
-module.exports = {isEachBarValid,isCartItemsValid};
+const getItemListInfo = (barcode,database) => {
+    return database.filter((item)=>barcode.split('-')[0].match(item.barcode));
+}
+
+module.exports = {isEachBarValid,isCartItemsValid,getItemListInfo};
