@@ -63,5 +63,10 @@ it ('should print listInfo when call isCartItemsValid given barcodes', () => {
 
 it ('should print ItemInfo when call getItemListInfo given barcode', () => {
     let barcode = 'ITEM000000';
-    expect(Pos_Machine.getItemListInfo(barcode,database)).toStrictEqual([{"barcode": "ITEM000000", "name": "可口可乐", "price": 3, "unit": "瓶"}]);
+    expect(Pos_Machine.getItemListInfo(barcode,database)).toStrictEqual( [{"barcode": "ITEM000000", "name": "可口可乐", "price": 3, "unit": "瓶"}]);
+});
+
+it ('should print ItemList when call getItemLists given barcodes', () => {
+    let barcodes = ['ITEM000000','000000','ITEM999999','ITEM000003-2.5'];
+    expect(Pos_Machine.getItemLists(barcodes)).toStrictEqual({ ITEM000000: 1, '000000': 1, ITEM999999: 1, ITEM000003: 2.5 });
 });
