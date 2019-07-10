@@ -28,10 +28,10 @@ const getSumItemsCost = (ItemLists,database,promotion) => {
         let temp = getItemListInfo(item,database)[0];
         if(promotion[0].barcodes.includes(item)){
             let promot = parseInt(ItemLists[item] / 3);
-            sumItemsCost.push({barcode:item,price:temp.price*(ItemLists[item] - promot),promotion:temp.price*promot});
+            sumItemsCost.push({barcode:item,price:temp.price*(ItemLists[item] - promot),promotion:temp.price*promot,count:ItemLists[item]});
         }
         else{
-            sumItemsCost.push({barcode:item,price:temp.price*ItemLists[item],promotion:0});
+            sumItemsCost.push({barcode:item,price:temp.price*ItemLists[item],promotion:0,count:ItemLists[item]});
         }
     }
     return sumItemsCost;
@@ -45,4 +45,14 @@ const getTotalPromotion = (sumItemsCost) => {
     return sumItemsCost.reduce((pre,cur)=>pre.promotion + cur.promotion);
 }
 
-module.exports = {isEachBarValid,isCartItemsValid,getItemListInfo,getItemLists,getSumItemsCost,getTotalPrices,getTotalPromotion};
+const createReciept = (sumItemsCost,totalPrices,totalPromotion,database) => {
+    let msg = "***<没钱赚商店>收据***\n";
+    sumItemsCost.forEach((item)=>{
+        let temp = getItemListInfo(item.barcode,database)[0];
+        msg += `名称：${temp.name}，数量：${item.count}${temp.unit}，单价：${temp.price}.00(元)，小计：${item.price}.00(元)\n`
+    });
+    msg += `----------------------\n总计：${totalPrices}(元)\n节省：${totalPromotion}(元)\n**********************`;
+    return msg;
+}
+
+module.exports = {isEachBarValid,isCartItemsValid,getItemListInfo,getItemLists,getSumItemsCost,getTotalPrices,getTotalPromotion,createReciept};
