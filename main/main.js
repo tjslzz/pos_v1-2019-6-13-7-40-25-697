@@ -1,8 +1,14 @@
 'use strict';
 
-const isEachBarValid = (barcode,database)=>{
+const isEachBarValid = (barcode,database)=> {
     let itemIds = database.map((item)=>item.barcode);
-    return itemIds.includes(barcode.split('-')[0]);
+    let eachBarValid = itemIds.includes(barcode.split('-')[0]);
+    return eachBarValid;
 }
 
-module.exports = {isEachBarValid};
+const isCartItemsValid = (barcodes,database) => {
+    let resultValid = barcodes.map((item)=>(isEachBarValid(item,database)?{itemId:item,valid:true}:{itemId:item,valid:false}));
+    return resultValid;
+}
+
+module.exports = {isEachBarValid,isCartItemsValid};
