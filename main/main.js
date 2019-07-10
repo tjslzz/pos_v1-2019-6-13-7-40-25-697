@@ -1,3 +1,8 @@
 'use strict';
 
-//TODO: 请在该文件中实现练习要求并删除此注释
+const isEachBarValid = (barcode,database)=>{
+    let itemIds = database.map((item)=>item.barcode);
+    return itemIds.includes(barcode.split('-')[0]);
+}
+
+module.exports = {isEachBarValid};
