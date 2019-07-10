@@ -90,3 +90,8 @@ it ('should print 40.5 when call getTotalPrices given Lists', () => {
   let barcodes = ['ITEM000000','ITEM000003-2.5'];
   expect(Pos_Machine.getTotalPrices(Pos_Machine.getSumItemsCost(Pos_Machine.getItemLists(barcodes),database,promotion))).toBe(40.5);
 });
+
+it ('should print 0 when call getTotalPrices given Lists', () => {
+  let barcodes = ['ITEM000000','ITEM000003-2.5'];
+  expect(Pos_Machine.getTotalPromotion(Pos_Machine.getSumItemsCost(Pos_Machine.getItemLists(barcodes),database,promotion))).toBe(0);
+});
