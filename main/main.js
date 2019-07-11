@@ -18,23 +18,19 @@ const getItemListInfo = (barcode,database) => {
 
 const getItemLists = (barcodes) => {
     let ItemLists = new Object();
-    barcodes.map((barcode)=>{
-        barcode.split('-').length == 2?(
-            ItemLists[barcode.split('-')[0]]==undefined?ItemLists[barcode.split('-')[0]]=barcode.split('-')[1]*1.00:ItemLists[barcode.split('-')[0]]+=barcode.split('-')[1]*1.00
-            ):ItemLists[barcode.split('-')[0]]==undefined?ItemLists[barcode.split('-')[0]]=1.00:ItemLists[barcode.split('-')[0]]+=1.00;});
+    barcodes.map((barcode)=>{barcode.split('-').length == 2?(ItemLists[barcode.split('-')[0]]==undefined?ItemLists[barcode.split('-')[0]]=barcode.split('-')[1]*1.00:ItemLists[barcode.split('-')[0]]+=barcode.split('-')[1]*1.00):ItemLists[barcode.split('-')[0]]==undefined?ItemLists[barcode.split('-')[0]]=1.00:ItemLists[barcode.split('-')[0]]+=1.00;});
     return ItemLists;
 }
 
 const getSumItemsCost = (ItemLists,database,promotion) => {
     let sumItemsCost = new Array();
     for(let item in ItemLists){
-        let temp = getItemListInfo(item,database)[0];
         if(promotion[0].barcodes.includes(item)){
             let promot = parseInt(ItemLists[item] / 3);
-            sumItemsCost.push({barcode:item,price:temp.price*(ItemLists[item] - promot),promotion:temp.price*promot,count:ItemLists[item]});
+            sumItemsCost.push({barcode:item,price:getItemListInfo(item,database)[0].price*(ItemLists[item] - promot),promotion:getItemListInfo(item,database)[0].price*promot,count:ItemLists[item]});
         }
         else{
-            sumItemsCost.push({barcode:item,price:temp.price*ItemLists[item],promotion:0.00,count:ItemLists[item]});
+            sumItemsCost.push({barcode:item,price:getItemListInfo(item,database)[0].price*ItemLists[item],promotion:0.00,count:ItemLists[item]});
         }
     }
     return sumItemsCost;
@@ -67,13 +63,20 @@ const printReceipt = (barcodes) => {
     let totalPrices = 0.00;
     let totalPromotion = 0.00;
     let msg = "";
-    resultValid = isCartItemsValid(barcodes,database);
-    itemList = getItemLists(barcodes);
-    sumItemsCost = getSumItemsCost(itemList,database,promotion);
-    totalPrices = getTotalPrices(JSON.parse(JSON.stringify(sumItemsCost)));
-    totalPromotion = getTotalPromotion(JSON.parse(JSON.stringify(sumItemsCost)));
-    msg = createReciept(sumItemsCost,totalPrices,totalPromotion,database);
-    console.log(msg);
+    resultValid = isCartItemsValid(barcodes,database).filter((item)=>item.valid === false);
+    if(resultValid.length){
+        console.log(resultValid);
+        return;
+    }
+    else{
+        itemList = getItemLists(barcodes);
+        sumItemsCost = getSumItemsCost(itemList,database,promotion);
+        totalPrices = getTotalPrices(JSON.parse(JSON.stringify(sumItemsCost)));
+        totalPromotion = getTotalPromotion(JSON.parse(JSON.stringify(sumItemsCost)));
+        msg = createReciept(sumItemsCost,totalPrices,totalPromotion,database);
+        console.log(msg);
+        return;
+    }
 }
 
 module.exports = {isEachBarValid,isCartItemsValid,getItemListInfo,getItemLists,getSumItemsCost,getTotalPrices,getTotalPromotion,createReciept,printReceipt};
